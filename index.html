@@ -699,8 +699,8 @@ main{max-width:900px;margin:0 auto;padding:1.5rem 1rem;position:relative;z-index
     <button class="modal-close" onclick="closeOverlay('loginOverlay')">✕</button>
     <div class="modal-title" id="loginTitle">Ingresar al Prode</div>
     <div class="login-form">
-      <input class="input-field" id="loginUser" placeholder="Usuario" autocomplete="off">
-      <input class="input-field" type="password" id="loginPass" placeholder="Contraseña">
+      <input class="input-field" id="loginUser" placeholder="Usuario" autocomplete="off" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
+      <input class="input-field" type="password" id="loginPass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')hacerLogin()">
       <p class="msg-error" id="loginError" style="display:none"></p>
       <button class="btn-login" onclick="hacerLogin()">Entrar</button>
       <button class="btn-sm" onclick="closeOverlay('loginOverlay');showLogoutOption()" id="logoutBtn" style="display:none">Cerrar sesión</button>
@@ -935,7 +935,7 @@ saveState(state);
 // CURRENT USER
 // ============================
 let currentUser=null;
-try{currentUser=JSON.parse(sessionStorage.getItem('prode2026_user'));}catch{}
+try{currentUser=JSON.parse(localStorage.getItem('prode2026_user'));}catch{}
 
 // ============================
 // NAV
@@ -973,12 +973,14 @@ function fmt(fecha){
 }
 function ahora(){return new Date()}
 function estaAbierto(p){
-  const limite=new Date(new Date(p.fecha).getTime()-3600000);
-  return !p.jugado && ahora()<limite;
+  if(p.jugado) return false;
+  const limite=new Date(new Date(p.fecha).getTime()-3600000); // 1h antes
+  return ahora()<limite;
 }
 function esCerrado(p){
+  if(p.jugado) return false;
   const limite=new Date(new Date(p.fecha).getTime()-3600000);
-  return !p.jugado && ahora()>=limite;
+  return ahora()>=limite;
 }
 function initials(u){return((u.nombre||'?')[0]+(u.apellido||'')[0]||'?').toUpperCase()}
 function avatarEl(u,size=36){
@@ -1002,28 +1004,38 @@ function toast(msg,tipo='ok'){
 // AUTH
 // ============================
 function showLoginModal(){
+  // Si ya está logueado, mostrar perfil (NO deshabilitar nada, abrir modal perfil)
   if(currentUser){
-    document.getElementById('loginTitle').textContent='Tu Perfil';
-    document.getElementById('loginUser').value=currentUser.user;
-    document.getElementById('loginPass').value='';
-    document.getElementById('logoutBtn').style.display='block';
-    document.getElementById('loginUser').disabled=true;
-    document.getElementById('loginPass').disabled=true;
-  }else{
-    document.getElementById('loginTitle').textContent='Ingresar al Prode';
-    document.getElementById('loginUser').value='';
-    document.getElementById('loginPass').value='';
-    document.getElementById('logoutBtn').style.display='none';
-    document.getElementById('loginUser').disabled=false;
-    document.getElementById('loginPass').disabled=false;
+    showPerfilModal();
+    return;
   }
+  // No logueado: mostrar login limpio
+  document.getElementById('loginTitle').textContent='Ingresar al Prode';
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginUser').disabled=false;
+  document.getElementById('loginPass').disabled=false;
+  document.getElementById('logoutBtn').style.display='none';
+  document.getElementById('loginError').style.display='none';
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  // Focus automático
+  setTimeout(()=>document.getElementById('loginUser').focus(),100);
+}
+function showPerfilModal(){
+  document.getElementById('loginTitle').textContent='👤 '+currentUser.nombre+' '+currentUser.apellido;
+  document.getElementById('loginUser').value=currentUser.user;
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginUser').disabled=true;
+  document.getElementById('loginPass').disabled=true;
+  document.getElementById('logoutBtn').style.display='block';
   document.getElementById('loginError').style.display='none';
   document.getElementById('loginOverlay').classList.remove('hidden');
 }
 function showLogoutOption(){
   currentUser=null;
-  sessionStorage.removeItem('prode2026_user');
+  localStorage.removeItem('prode2026_user');
   updateUserBar();
+  renderPartidos();
   toast('Sesión cerrada','ok');
 }
 function hacerLogin(){
@@ -1037,7 +1049,7 @@ function hacerLogin(){
     return;
   }
   currentUser=found;
-  sessionStorage.setItem('prode2026_user',JSON.stringify(found));
+  localStorage.setItem('prode2026_user',JSON.stringify(found));
   closeOverlay('loginOverlay');
   updateUserBar();
   if(found.role==='admin'){
@@ -1246,7 +1258,7 @@ function confirmarApuesta(){
   }
   // Actualizar usuario en sesión por si cambió
   const uActualizado=state.usuarios.find(u=>u.user===currentUser.user);
-  if(uActualizado){currentUser={...uActualizado};sessionStorage.setItem('prode2026_user',JSON.stringify(currentUser));}
+  if(uActualizado){currentUser={...uActualizado};localStorage.setItem('prode2026_user',JSON.stringify(currentUser));}
   saveState(state);
   closeOverlay('apostarOverlay');
   toast('¡Apuesta guardada! ⚽','ok');
