@@ -165,32 +165,64 @@ main{max-width:900px;margin:0 auto;padding:1.5rem 1rem;position:relative;z-index
 
 /* ===== APOSTAR MODAL ===== */
 .overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);
-  z-index:200;display:flex;align-items:center;justify-content:center;
-  padding:1rem;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.85);
+  backdrop-filter:blur(4px);
+  z-index:200;
+  display:flex;
+  align-items:flex-end;       /* sheet desde abajo en mobile */
+  justify-content:center;
+  overflow:hidden;
 }
 .overlay.hidden{display:none}
+
+/* El modal es el que scrollea internamente */
 .modal{
-  background:var(--gris);border:1px solid var(--borde);
-  border-radius:16px;padding:1.5rem;width:100%;max-width:480px;
+  background:var(--gris);
+  border:1px solid var(--borde);
+  border-radius:20px 20px 0 0;
+  padding:0;
+  width:100%;
+  max-width:540px;
+  /* Altura: máximo 92% del viewport, mínimo lo que necesite */
+  max-height:92vh;
+  max-height:92dvh;
+  display:flex;
+  flex-direction:column;
   position:relative;
 }
-.modal-close{
-  position:absolute;top:.9rem;right:.9rem;
-  background:#ffffff12;border:1px solid var(--borde);
-  border-radius:50%;cursor:pointer;
-  color:#8899cc;font-size:1rem;
-  width:32px;height:32px;
+
+/* Handle bar arriba del modal */
+.modal-handle{
+  flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  transition:all .2s;line-height:1;
+  padding:.75rem 0 0;
 }
-.modal-close:hover{color:var(--blanco);background:#ffffff22}
-/* handle bar para mobile (efecto sheet) */
-.modal::before{
+.modal-handle::before{
   content:'';display:block;
   width:40px;height:4px;border-radius:2px;
-  background:#ffffff20;margin:0 auto .8rem;
+  background:#ffffff25;
 }
+
+/* Zona scrolleable del modal */
+.modal-body{
+  flex:1;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding:1rem 1.25rem 2rem;
+}
+
+.modal-close{
+  position:absolute;top:.75rem;right:.75rem;
+  background:#ffffff12;border:1px solid var(--borde);
+  border-radius:50%;cursor:pointer;
+  color:#8899cc;font-size:.9rem;
+  width:30px;height:30px;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.modal-close:hover{color:var(--blanco);background:#ffffff22}
 .modal-title{
   font-family:'Bebas Neue',sans-serif;
   font-size:1.5rem;color:var(--blanco);margin-bottom:1.2rem;
@@ -491,19 +523,11 @@ main{max-width:900px;margin:0 auto;padding:1.5rem 1rem;position:relative;z-index
   .match-admin-row .score-pair{grid-column:2;grid-row:1/3;flex-direction:column;align-items:center}
   .match-admin-row .btn-guardar{grid-column:1/3;grid-row:3;width:100%;padding:.5rem}
 
-  /* Modal: fullscreen en mobile */
-  .overlay{padding:0;align-items:flex-end}
-  .modal{
-    border-radius:20px 20px 0 0;
-    padding:1.25rem 1rem 2rem;
-    max-width:100%;
-    max-height:90vh;
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
-  }
+  /* Modal mobile: ya es bottom sheet por defecto, solo ajustar tamaños internos */
+  .modal-body{padding:.85rem 1rem 1.5rem}
   .modal-bandera{font-size:2rem}
   .modal-nombre{font-size:.82rem}
-  .score-input{width:52px;height:52px;font-size:1.8rem}
+  .score-input{width:58px;height:58px;font-size:1.9rem}
   .champion-grid{gap:.3rem}
   .champion-btn{font-size:.75rem;padding:.28rem .55rem}
 
@@ -531,14 +555,17 @@ main{max-width:900px;margin:0 auto;padding:1.5rem 1rem;position:relative;z-index
 /* ===== TABLET ===== */
 @media(min-width:601px) and (max-width:900px){
   .nav-btn{padding:.45rem .7rem;font-size:.88rem}
-  .modal{max-width:520px}
+  .overlay{align-items:center;padding:1rem}
+  .modal{border-radius:16px;max-height:88vh;max-height:88dvh}
 }
 
 /* ===== DESKTOP ===== */
 @media(min-width:901px){
+  .overlay{align-items:center;padding:1.5rem}
+  .modal{border-radius:16px;max-width:500px;max-height:85vh;max-height:85dvh}
   .partido-card{padding:.85rem 1.2rem}
   .equipo{font-size:1rem}
-  .modal{padding:2rem}
+  .modal-body{padding:1.25rem 1.75rem 2rem}
   .score-input{width:64px;height:64px;font-size:2.2rem}
 }
 
@@ -696,14 +723,17 @@ main{max-width:900px;margin:0 auto;padding:1.5rem 1rem;position:relative;z-index
 <!-- LOGIN -->
 <div class="overlay hidden" id="loginOverlay">
   <div class="modal">
+    <div class="modal-handle"></div>
     <button class="modal-close" onclick="closeOverlay('loginOverlay')">✕</button>
-    <div class="modal-title" id="loginTitle">Ingresar al Prode</div>
-    <div class="login-form">
-      <input class="input-field" id="loginUser" placeholder="Usuario" autocomplete="off" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
-      <input class="input-field" type="password" id="loginPass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')hacerLogin()">
-      <p class="msg-error" id="loginError" style="display:none"></p>
-      <button class="btn-login" onclick="hacerLogin()">Entrar</button>
-      <button class="btn-sm" onclick="closeOverlay('loginOverlay');showLogoutOption()" id="logoutBtn" style="display:none">Cerrar sesión</button>
+    <div class="modal-body">
+      <div class="modal-title" id="loginTitle">Ingresar al Prode</div>
+      <div class="login-form">
+        <input class="input-field" id="loginUser" placeholder="Usuario" autocomplete="off" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
+        <input class="input-field" type="password" id="loginPass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')hacerLogin()">
+        <p class="msg-error" id="loginError" style="display:none"></p>
+        <button class="btn-login" onclick="hacerLogin()">Entrar</button>
+        <button class="btn-sm" onclick="closeOverlay('loginOverlay');showLogoutOption()" id="logoutBtn" style="display:none">Cerrar sesión</button>
+      </div>
     </div>
   </div>
 </div>
@@ -711,31 +741,34 @@ main{max-width:900px;margin:0 auto;padding:1.5rem 1rem;position:relative;z-index
 <!-- APOSTAR -->
 <div class="overlay hidden" id="apostarOverlay">
   <div class="modal">
+    <div class="modal-handle"></div>
     <button class="modal-close" onclick="closeOverlay('apostarOverlay')">✕</button>
-    <div class="modal-title">Hacer tu Apuesta</div>
-    <div class="modal-equipos">
-      <div class="modal-equipo">
-        <span class="modal-bandera" id="apostarBandera1"></span>
-        <div class="modal-nombre" id="apostarNombre1"></div>
+    <div class="modal-body">
+      <div class="modal-title">Hacer tu Apuesta</div>
+      <div class="modal-equipos">
+        <div class="modal-equipo">
+          <span class="modal-bandera" id="apostarBandera1"></span>
+          <div class="modal-nombre" id="apostarNombre1"></div>
+        </div>
+        <div class="vs-dash">VS</div>
+        <div class="modal-equipo">
+          <span class="modal-bandera" id="apostarBandera2"></span>
+          <div class="modal-nombre" id="apostarNombre2"></div>
+        </div>
       </div>
-      <div class="vs-dash">VS</div>
-      <div class="modal-equipo">
-        <span class="modal-bandera" id="apostarBandera2"></span>
-        <div class="modal-nombre" id="apostarNombre2"></div>
+      <label class="form-label">Resultado exacto</label>
+      <div class="score-inputs">
+        <input class="score-input" type="number" id="apostarG1" min="0" max="30" placeholder="0">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:#445577">-</span>
+        <input class="score-input" type="number" id="apostarG2" min="0" max="30" placeholder="0">
       </div>
+      <div id="campeonPickSection" style="display:none;margin-top:1.2rem">
+        <label class="form-label" style="margin-bottom:.5rem">Apostá al Campeón (+10 pts)</label>
+        <div class="champion-grid" id="campeonPickGrid"></div>
+      </div>
+      <button class="btn-apostar" id="btnConfirmarApuesta" onclick="confirmarApuesta()">Confirmar Apuesta</button>
+      <p id="apostarMsg" style="font-size:.82rem;color:#e05555;margin-top:.5rem;display:none"></p>
     </div>
-    <label class="form-label">Resultado exacto</label>
-    <div class="score-inputs">
-      <input class="score-input" type="number" id="apostarG1" min="0" max="30" placeholder="0">
-      <span style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:#445577">-</span>
-      <input class="score-input" type="number" id="apostarG2" min="0" max="30" placeholder="0">
-    </div>
-    <div id="campeonPickSection" style="display:none;margin-top:1rem">
-      <label class="form-label" style="margin-bottom:.5rem">Apostá al Campeón (+10 pts)</label>
-      <div class="champion-grid" id="campeonPickGrid"></div>
-    </div>
-    <button class="btn-apostar" id="btnConfirmarApuesta" onclick="confirmarApuesta()">Confirmar Apuesta</button>
-    <p id="apostarMsg" style="font-size:.82rem;color:#e05555;margin-top:.5rem;display:none"></p>
   </div>
 </div>
 
