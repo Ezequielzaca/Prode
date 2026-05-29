@@ -176,12 +176,21 @@ main{max-width:900px;margin:0 auto;padding:1.5rem 1rem;position:relative;z-index
   position:relative;
 }
 .modal-close{
-  position:absolute;top:1rem;right:1rem;
-  background:transparent;border:none;cursor:pointer;
-  color:#556699;font-size:1.2rem;padding:.3rem;
-  transition:color .2s;
+  position:absolute;top:.9rem;right:.9rem;
+  background:#ffffff12;border:1px solid var(--borde);
+  border-radius:50%;cursor:pointer;
+  color:#8899cc;font-size:1rem;
+  width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;line-height:1;
 }
-.modal-close:hover{color:var(--blanco)}
+.modal-close:hover{color:var(--blanco);background:#ffffff22}
+/* handle bar para mobile (efecto sheet) */
+.modal::before{
+  content:'';display:block;
+  width:40px;height:4px;border-radius:2px;
+  background:#ffffff20;margin:0 auto .8rem;
+}
 .modal-title{
   font-family:'Bebas Neue',sans-serif;
   font-size:1.5rem;color:var(--blanco);margin-bottom:1.2rem;
@@ -442,18 +451,105 @@ main{max-width:900px;margin:0 auto;padding:1.5rem 1rem;position:relative;z-index
 .champion-btn:hover{border-color:var(--amarillo);color:var(--amarillo)}
 .champion-btn.selected{background:#f5c51820;border-color:var(--amarillo);color:var(--amarillo);font-weight:600}
 
-/* responsive */
+/* ===== RESPONSIVE MOBILE ===== */
 @media(max-width:600px){
-  .header-inner{height:52px}
-  .logo{font-size:1.2rem}
-  .nav-btn{padding:.4rem .6rem;font-size:.82rem}
-  .partido-top{gap:.3rem}
-  .equipo{font-size:.82rem}
-  .grupos-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  /* Header */
+  .header-inner{height:52px;padding:0}
+  .logo{font-size:1.1rem}
+  .nav-btn{padding:.35rem .5rem;font-size:.78rem;letter-spacing:.02em}
+
+  /* Main */
+  main{padding:1rem .75rem}
+  .sec-title{font-size:1.5rem;margin-bottom:1rem}
+
+  /* Partidos */
+  .partido-card{padding:.6rem .75rem}
+  .partido-top{gap:.25rem}
+  .equipo{font-size:.78rem;gap:.3rem}
+  .bandera{font-size:1.1rem}
+  .vs-box{min-width:56px}
   .vs-score{font-size:1.1rem}
+  .vs-text{font-size:.65rem}
+  .partido-meta{gap:.5rem;font-size:.72rem;flex-wrap:wrap}
+
+  /* Grupos */
+  .grupos-grid{grid-template-columns:1fr 1fr}
+
+  /* Ranking table: ocultar columna detalle en mobile */
+  .ranking-table th:last-child,
+  .ranking-table td:last-child{display:none}
+
+  /* Admin resultados: layout vertical en mobile */
+  .match-admin-row{
+    grid-template-columns:1fr auto;
+    grid-template-rows:auto auto;
+    gap:.35rem;
+    padding:.75rem 0;
+  }
+  .match-admin-row > div:first-child{grid-column:1;grid-row:1}
+  .match-admin-row > div:nth-child(3){grid-column:1;grid-row:2;justify-content:flex-start}
+  .match-admin-row .score-pair{grid-column:2;grid-row:1/3;flex-direction:column;align-items:center}
+  .match-admin-row .btn-guardar{grid-column:1/3;grid-row:3;width:100%;padding:.5rem}
+
+  /* Modal: fullscreen en mobile */
+  .overlay{padding:0;align-items:flex-end}
+  .modal{
+    border-radius:20px 20px 0 0;
+    padding:1.25rem 1rem 2rem;
+    max-width:100%;
+    max-height:90vh;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .modal-bandera{font-size:2rem}
+  .modal-nombre{font-size:.82rem}
+  .score-input{width:52px;height:52px;font-size:1.8rem}
+  .champion-grid{gap:.3rem}
+  .champion-btn{font-size:.75rem;padding:.28rem .55rem}
+
+  /* User bar */
+  .user-bar{max-width:160px;padding:.4rem .8rem .4rem .4rem}
+  .user-bar .user-name{font-size:.78rem}
+  .user-bar .user-role{display:none}
+
+  /* Login bar btn */
+  #loginBarBtn{font-size:.78rem;padding:.45rem .9rem}
+
+  /* Toast */
+  .toast{right:.75rem;left:.75rem;max-width:none;font-size:.8rem}
+
+  /* Scroll top btn: no solapar con user bar */
+  .scroll-top{bottom:5rem;right:.75rem}
+
+  /* Sub tabs */
+  .sub-btn{font-size:.78rem;padding:.35rem .7rem}
+
+  /* Apostadores chips: más compactos */
+  .apostador-chip{font-size:.68rem}
 }
 
-/* campeon banner */
+/* ===== TABLET ===== */
+@media(min-width:601px) and (max-width:900px){
+  .nav-btn{padding:.45rem .7rem;font-size:.88rem}
+  .modal{max-width:520px}
+}
+
+/* ===== DESKTOP ===== */
+@media(min-width:901px){
+  .partido-card{padding:.85rem 1.2rem}
+  .equipo{font-size:1rem}
+  .modal{padding:2rem}
+  .score-input{width:64px;height:64px;font-size:2.2rem}
+}
+
+.nav-ico{margin-right:.2rem}
+.nav-txt{}
+@media(max-width:380px){
+  .nav-txt{display:none}
+  .nav-ico{margin-right:0}
+  .nav-btn{padding:.4rem .55rem;font-size:1rem}
+}
+
 .campeon-banner{
   background:linear-gradient(135deg,#f5c51815,#003f8a20);
   border:1px solid var(--amarillo);border-radius:10px;
@@ -485,10 +581,10 @@ main{max-width:900px;margin:0 auto;padding:1.5rem 1rem;position:relative;z-index
   <div class="header-inner">
     <div class="logo">⚽ Prode <span>2026</span></div>
     <nav class="nav-tabs">
-      <button class="nav-btn active" onclick="goPage('inicio')" data-page="inicio">🏠 Inicio</button>
-      <button class="nav-btn" onclick="goPage('grupos')" data-page="grupos">📊 Grupos</button>
-      <button class="nav-btn" onclick="goPage('ranking')" data-page="ranking">🏆 Ranking</button>
-      <button class="nav-btn" onclick="goPage('admin')" data-page="admin" id="adminNavBtn" style="display:none">⚙️ Admin</button>
+      <button class="nav-btn active" onclick="goPage('inicio')" data-page="inicio"><span class="nav-ico">🏠</span><span class="nav-txt">Inicio</span></button>
+      <button class="nav-btn" onclick="goPage('grupos')" data-page="grupos"><span class="nav-ico">📊</span><span class="nav-txt">Grupos</span></button>
+      <button class="nav-btn" onclick="goPage('ranking')" data-page="ranking"><span class="nav-ico">🏆</span><span class="nav-txt">Ranking</span></button>
+      <button class="nav-btn" onclick="goPage('admin')" data-page="admin" id="adminNavBtn" style="display:none"><span class="nav-ico">⚙️</span><span class="nav-txt">Admin</span></button>
     </nav>
   </div>
 </header>
